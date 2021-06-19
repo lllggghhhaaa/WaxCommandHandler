@@ -1,5 +1,8 @@
 ### Como usar
 
+#### Instalando
+`npm i wax-command-handler`
+
 #### coloque no arquivo principal do bot
 ```js
 const handler = require("wax-command-handler");
