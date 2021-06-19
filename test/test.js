@@ -15,15 +15,25 @@ const commandConfig = new handler.CommandConfig(
 
 handler.setup(commandConfig);
 
-handler.useDefaultHelp(handler);
+client.on("ready", () => {
+    handler.useSlashHandler();
 
-for (const file of readdirSync(__dirname + "/Commands").filter(file => file.endsWith('.js'))) {
-    const command = require(`./Commands/${file}`);
-    handler.addCommand(command);
-}
+    handler.useDefaultHelp(handler);
+
+    for (const file of readdirSync(__dirname + "/Commands").filter(file => file.endsWith('.js'))) {
+        const command = require(`./Commands/${file}`);
+        handler.addCommand(command);
+
+        if(command.slash) handler.addSlashCommand(command);
+    }
+});
 
 client.on("message", message => {
     handler.messageReceived(message);
 });
+
+client.ws.on("INTERACTION_CREATE", async data => {
+    handler.wsInteractionReceived(data);
+})
 
 client.login(token);

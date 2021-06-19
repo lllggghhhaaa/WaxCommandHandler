@@ -8,4 +8,7 @@ module.exports = {
     execute(client, message, args) {
         message.channel.send("it's work, it's magic!");
     },
+    slash(client, handler, data) {
+        handler.postSlashMessage(data, "it's work, it's magic!")
+    }
 };

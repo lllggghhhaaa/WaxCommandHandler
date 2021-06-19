@@ -1,3 +1,4 @@
+const SlashHandler = require("./SlashHandler");
 const { Collection } = require("discord.js");
 
 let commandConfig;
@@ -12,10 +13,16 @@ module.exports.setup = (cmdConfig) => {
     commandConfig.client.handler = this;
 }
 
+module.exports.useSlashHandler = () => {
+    SlashHandler.setupSlash(commandConfig.client, this);
+}
+
 function addCommand(command) {
     if (commands.get(command.name)) throw new Error("Duplicate command error");
     commands.set(command.name, command);
 }
+
+module.exports.addSlashCommand = SlashHandler.addSlashCommand;
 
 module.exports.addCommand = addCommand;
 
@@ -79,6 +86,8 @@ module.exports.messageReceived = (message) => {
         console.log(e);
     }
 }
+
+module.exports.wsInteractionReceived = SlashHandler.onInteraction;
 
 class CommandHandlerConfiguration {
     constructor(client, prefix, ignore_bot, cooldown_message, permission_message, wrong_usage) {

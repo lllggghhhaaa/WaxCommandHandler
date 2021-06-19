@@ -23,15 +23,20 @@ const commandConfig = new handler.CommandConfig(
 
 handler.setup(commandConfig);
 
+client.on("ready", () => {
+    // to use default help
+    handler.useSlashHandler();
 
-// to use default help
-handler.useDefaultHelp(handler);
+    // to use slash commands
+    handler.useDefaultHelp(handler);
+    
+    for (const file of readdirSync(__dirname + "/Commands").filter(file => file.endsWith('.js'))) {
+        const command = require(`./Commands/${file}`);
+        handler.addCommand(command);
 
-
-for (const file of readdirSync(__dirname + "/commands").filter(file => file.endsWith('.js'))) {
-    const command = require(`./commands/${file}`);
-    handler.addCommand(command);
-}
+        if(command.slash) handler.addSlashCommand(command);
+    }
+});
 
 client.login("token");
 ```
@@ -42,6 +47,14 @@ client.on("message", message => {
     // ...
     handler.messageReceived(message);
 });
+```
+
+#### se for usar slash commands
+```js
+client.ws.on("INTERACTION_CREATE", async data => {
+    // ...
+    handler.wsInteractionReceived(data);
+})
 ```
 
 #### exemplo de comando
@@ -71,6 +84,23 @@ module.exports = {
     execute(client, message, args) {
         message.channel.send(args[0]);
     },
+};
+
+// com slash commands
+
+module.exports = {
+    name: "test",
+    description: "testing commands",
+    aliases: [ "t", "guei" ],
+    usage: "test",
+    cooldown: 5,
+    permissions: [ "ADMINISTRATOR" ],
+    execute(client, message, args) {
+        message.channel.send("it's work, it's magic!");
+    },
+    slash(client, handler, data) {
+        handler.postSlashMessage(data, "it's work, it's magic!")
+    }
 };
 ```
 
