@@ -29,8 +29,8 @@ module.exports.messageReceived = (client, message) => {
         const command = commands.get(command_name)
             || commands.find(cmd => cmd.aliases && cmd.aliases.includes(command_name));
 
-        if (!cooldowns.has(command_name)) {
-            cooldowns.set(command_name, new Collection());
+        if (!cooldowns.has(command.name)) {
+            cooldowns.set(command.name, new Collection());
         }
 
         const now = Date.now();
