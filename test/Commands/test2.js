@@ -1,11 +1,11 @@
 module.exports = {
-    name: "test",
+    name: "test2",
     description: "testing commands",
-    aliases: [ "t", "guei" ],
-    usage: "test",
+    aliases: [ "t2", "guei2" ],
+    usage: "test <message>",
     cooldown: 5,
     permissions: [ "ADMINISTRATOR" ],
     execute(client, message, args) {
-        message.channel.send("it's work, it's magic!");
+        message.channel.send(args[0]);
     },
 };

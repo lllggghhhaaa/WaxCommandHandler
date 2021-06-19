@@ -4,6 +4,7 @@ module.exports = {
     name: "help",
     description: "list all commands",
     aliases: [ "h", "ajuda" ],
+    usage: "help",
     permissions: [ ],
     cooldown: 5,
     execute(client, message, args) {
@@ -14,7 +15,7 @@ module.exports = {
 
             const embed = new MessageEmbed()
                 .setTitle("Help")
-                .setDescription(`**Name:** ${command.name}\n**Description:** ${command.description}\n**Aliases:** ${command.aliases.join(", ")}\n**Cooldown:** ${command.cooldown}`);
+                .setDescription(`**Name:** ${command.name}\n**Description:** ${command.description}\n**Aliases:** ${command.aliases.join(", ")}\n**Usage:** ${command.usage}\n**Cooldown:** ${command.cooldown}`);
 
             return message.channel.send(embed);
         }

@@ -5,7 +5,13 @@ const handler = require("../CommandHandler");
 
 const client = new Client();
 
-const commandConfig = new handler.CommandConfig(client, "!", true, "Wait %TIME% seconds to execute %CMD%", "You dont has permission %PERM% to execute this command");
+const commandConfig = new handler.CommandConfig(
+    client,
+    "!",
+    true,
+    "Wait %TIME% seconds to execute %CMD%",
+    "You dont has permission `%PERM%` to execute this command",
+    "The correct usage is `%USAGE%`");
 
 handler.setup(commandConfig);
 

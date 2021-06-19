@@ -12,14 +12,16 @@ module.exports.setup = (cmdConfig) => {
     commandConfig.client.handler = this;
 }
 
-module.exports.addCommand = (command) => {
+function addCommand(command) {
     if (commands.get(command.name)) throw new Error("Duplicate command error");
     commands.set(command.name, command);
 }
 
+module.exports.addCommand = addCommand;
+
 module.exports.useDefaultHelp = (handler) => {
     const helpCommand = require("./defaultCommands/help");
-    handler.addCommand(helpCommand);
+    addCommand(helpCommand);
 }
 
 module.exports.messageReceived = (message) => {
@@ -38,6 +40,12 @@ module.exports.messageReceived = (message) => {
 
         if (!cooldowns.has(command.name)) {
             cooldowns.set(command.name, new Collection());
+        }
+
+        if (command.usage) {
+            let need_args = command.usage.split(' ');
+
+            if (args.length < need_args.length - 1) return message.reply(commandConfig.wrong_usage.replace("%USAGE%", command.usage));
         }
 
         if (command.permissions) {
@@ -73,12 +81,13 @@ module.exports.messageReceived = (message) => {
 }
 
 class CommandHandlerConfiguration {
-    constructor(client, prefix, ignore_bot, cooldown_message, permission_message) {
+    constructor(client, prefix, ignore_bot, cooldown_message, permission_message, wrong_usage) {
         this.client = client;
         this.prefix = prefix;
         this.ignore_bot = ignore_bot;
         this.cooldown_message = cooldown_message;
         this.permission_message = permission_message;
+        this.wrong_usage = wrong_usage;
     }
 }
 

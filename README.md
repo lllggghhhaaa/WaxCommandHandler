@@ -11,13 +11,14 @@ const discord = require("discord.js");
 const client = new discord.Client();
 
 
-// (client: Discord.Client, prefix: string, ignore_bot: boolean, cooldown_message: string, permission_message: string)
+// (client: Discord.Client, prefix: string, ignore_bot: boolean, cooldown_message: string, permission_message: string, wrong_usage_message: string)
 const commandConfig = new handler.CommandConfig(
-    client, 
+    client,
     "!",
     true,
     "Wait %TIME% seconds to execute %CMD%",
-    "You dont has permission %PERM% to execute this command");
+    "You dont has permission `%PERM%` to execute this command",
+    "The correct usage is `%USAGE%`");
 
 
 handler.setup(commandConfig);
@@ -45,6 +46,8 @@ client.on("message", message => {
 
 #### exemplo de comando
 ```js
+// sem nenhum parametro
+
 module.exports = {
     name: "test",
     description: "testing commands",
@@ -53,6 +56,20 @@ module.exports = {
     permissions: [ "ADMINISTRATOR" ],
     execute(client, message, args) {
         message.channel.send("it's work, it's magic!");
+    },
+};
+
+// com parametros
+
+module.exports = {
+    name: "test2",
+    description: "testing commands",
+    aliases: [ "t2", "guei2" ],
+    usage: "test <message>",
+    cooldown: 5,
+    permissions: [ "ADMINISTRATOR" ],
+    execute(client, message, args) {
+        message.channel.send(args[0]);
     },
 };
 ```
