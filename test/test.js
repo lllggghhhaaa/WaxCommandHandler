@@ -5,9 +5,11 @@ const handler = require("../CommandHandler");
 
 const client = new Client();
 
-const commandConfig = new handler.CommandConfig("!", true, "Wait %TIME% seconds to execute %CMD%", "You dont has permission %PERM% to execute this command");
+const commandConfig = new handler.CommandConfig(client, "!", true, "Wait %TIME% seconds to execute %CMD%", "You dont has permission %PERM% to execute this command");
 
 handler.setup(commandConfig);
+
+handler.useDefaultHelp(handler);
 
 for (const file of readdirSync(__dirname + "/Commands").filter(file => file.endsWith('.js'))) {
     const command = require(`./Commands/${file}`);
@@ -15,7 +17,7 @@ for (const file of readdirSync(__dirname + "/Commands").filter(file => file.ends
 }
 
 client.on("message", message => {
-    handler.messageReceived(client, message);
+    handler.messageReceived(message);
 });
 
 client.login(token);

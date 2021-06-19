@@ -1,9 +1,10 @@
 module.exports = {
-    name: 'test',
+    name: "test",
+    description: "testing commands",
     aliases: [ "t", "guei" ],
-    permissions: [ "ADMINISTRATOR" ],
     cooldown: 5,
+    permissions: [ "ADMINISTRATOR" ],
     execute(client, message, args) {
-        message.channel.send("it's work, it's magic!")
+        message.channel.send("it's work, it's magic!");
     },
 };

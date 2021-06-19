@@ -5,15 +5,24 @@ let commandConfig;
 const commands = new Collection();
 const cooldowns = new Collection();
 
+module.exports.commands = commands;
+
 module.exports.setup = (cmdConfig) => {
     commandConfig = cmdConfig;
+    commandConfig.client.handler = this;
 }
 
 module.exports.addCommand = (command) => {
+    if (commands.get(command.name)) throw new Error("Duplicate command error");
     commands.set(command.name, command);
 }
 
-module.exports.messageReceived = (client, message) => {
+module.exports.useDefaultHelp = (handler) => {
+    const helpCommand = require("./defaultCommands/help");
+    handler.addCommand(helpCommand);
+}
+
+module.exports.messageReceived = (message) => {
     if (commandConfig.ignore_bot && message.author.bot) return;
     if (!message.content.startsWith(commandConfig.prefix)) return;
 
@@ -57,14 +66,15 @@ module.exports.messageReceived = (client, message) => {
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-        command.execute(client, message, args);
+        command.execute(commandConfig.client, message, args);
     } catch (e) {
         console.log(e);
     }
 }
 
 class CommandHandlerConfiguration {
-    constructor(prefix, ignore_bot, cooldown_message, permission_message) {
+    constructor(client, prefix, ignore_bot, cooldown_message, permission_message) {
+        this.client = client;
         this.prefix = prefix;
         this.ignore_bot = ignore_bot;
         this.cooldown_message = cooldown_message;
