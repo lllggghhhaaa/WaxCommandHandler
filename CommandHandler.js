@@ -1,16 +1,12 @@
 const { Collection } = require("discord.js");
 
-let bot_prefix;
-let user_only;
-let cooldown_error_message;
+let commandConfig;
 
 const commands = new Collection();
 const cooldowns = new Collection();
 
-module.exports.setup = (prefix, ignore_bot, cooldown_message) => {
-    bot_prefix = prefix;
-    user_only = ignore_bot;
-    cooldown_error_message = cooldown_message;
+module.exports.setup = (cmdConfig) => {
+    commandConfig = cmdConfig;
 }
 
 module.exports.addCommand = (command) => {
@@ -18,19 +14,29 @@ module.exports.addCommand = (command) => {
 }
 
 module.exports.messageReceived = (client, message) => {
-    if (user_only && message.author.bot) return;
-    if (!message.content.startsWith(bot_prefix)) return;
+    if (commandConfig.ignore_bot && message.author.bot) return;
+    if (!message.content.startsWith(commandConfig.prefix)) return;
 
 
-    const args = message.content.slice(bot_prefix.length).trim().split(/ +/);
+    const args = message.content.slice(commandConfig.prefix.length).trim().split(/ +/);
     const command_name = args.shift().toLowerCase();
 
     try {
         const command = commands.get(command_name)
             || commands.find(cmd => cmd.aliases && cmd.aliases.includes(command_name));
 
+        if (!command) return;
+
         if (!cooldowns.has(command.name)) {
             cooldowns.set(command.name, new Collection());
+        }
+
+        if (command.permissions) {
+            const member_perms = message.channel.permissionsFor(message.author);
+            if (!member_perms.has(command.permissions)) {
+                return message.reply(commandConfig.permission_message.replace("%PERM%",
+                    command.permissions.find(x => !member_perms.has(x))));
+            }
         }
 
         const now = Date.now();
@@ -42,7 +48,7 @@ module.exports.messageReceived = (client, message) => {
 
             if (now < expirationTime) {
                 const timeLeft = (expirationTime - now) * 0.001;
-                return message.reply(cooldown_error_message
+                return message.reply(commandConfig.cooldown_message
                     .replace("%TIME%", timeLeft.toFixed(1))
                     .replace("%CMD%", command_name));
             }
@@ -56,3 +62,14 @@ module.exports.messageReceived = (client, message) => {
         console.log(e);
     }
 }
+
+class CommandHandlerConfiguration {
+    constructor(prefix, ignore_bot, cooldown_message, permission_message) {
+        this.prefix = prefix;
+        this.ignore_bot = ignore_bot;
+        this.cooldown_message = cooldown_message;
+        this.permission_message = permission_message;
+    }
+}
+
+module.exports.CommandConfig = CommandHandlerConfiguration;
