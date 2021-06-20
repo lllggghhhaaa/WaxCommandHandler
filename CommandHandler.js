@@ -23,6 +23,7 @@ function addCommand(command) {
 }
 
 module.exports.addSlashCommand = SlashHandler.addSlashCommand;
+module.exports.listSlashCommand = SlashHandler.listSlashCommand;
 
 module.exports.addCommand = addCommand;
 

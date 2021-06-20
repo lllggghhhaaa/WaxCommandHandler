@@ -10,26 +10,27 @@ module.exports.setupSlash = (client, command_handler) => {
 }
 
 const get_application = (guild_id) => {
-    const app = discord_client.api.applications(discord_client.user.id);
-
-    return app;
+    return discord_client.api.applications(discord_client.user.id);
 }
 
 module.exports.getApplication = get_application;
 
-module.exports.addSlashCommand = (command, guildId) => {
+function listSlashCommand (command) {
+    handler.slashCommands.set(command.name, command);
+}
 
-    let app = get_application()
+module.exports.listSlashCommand = listSlashCommand;
 
-    app.commands.post({
+module.exports.addSlashCommand = (command, options) => {
+
+    get_application().commands.post({
         data: {
             name: command.name,
-            description: command.description
+            description: command.description,
+            options: options
         }});
 
-    handler.slashCommands.set(command.name, command);
-
-    console.log("added")
+    listSlashCommand(command);
 }
 
 module.exports.onInteraction = (data) => {
@@ -46,7 +47,7 @@ function postSlashMessage(data, message) {
                 content: message
             }
         }
-    })
+    });
 }
 
 module.exports.postSlashMessage = postSlashMessage;

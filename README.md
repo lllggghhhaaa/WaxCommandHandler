@@ -34,7 +34,11 @@ client.on("ready", () => {
         const command = require(`./Commands/${file}`);
         handler.addCommand(command);
 
+        // TO REGISTER COMMAND
         if(command.slash) handler.addSlashCommand(command);
+        
+        // IF THE COMMAND IS REGISTERED USE THIS INSTEANDED
+        if(command.slash) handler.listSlashCommand(command);
     }
 });
 

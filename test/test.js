@@ -24,7 +24,7 @@ client.on("ready", () => {
         const command = require(`./Commands/${file}`);
         handler.addCommand(command);
 
-        if(command.slash) handler.addSlashCommand(command);
+        if(command.slash) handler.listSlashCommand(command);
     }
 });
 
