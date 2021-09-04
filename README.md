@@ -53,6 +53,13 @@ client.on("message", message => {
 });
 ```
 
+#### recebendo erros
+```js
+handler.events.on("command_error", e => {
+    console.log(e);
+})
+```
+
 #### se for usar slash commands
 ```js
 client.ws.on("INTERACTION_CREATE", async data => {
