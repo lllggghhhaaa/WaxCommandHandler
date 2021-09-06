@@ -8,7 +8,10 @@ const commands = new Collection();
 const cooldowns = new Collection();
 const events = new EventEmitter();
 
-module.exports.commands = commands;
+module.exports = {
+    commands,
+    events
+}
 
 module.exports.setup = (cmdConfig) => {
     commandConfig = cmdConfig;
