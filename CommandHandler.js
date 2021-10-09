@@ -57,15 +57,13 @@ module.exports.messageReceived = (message) => {
     if (command.usage) {
         let need_args = command.usage.split(' ');
 
-        if (args.length < need_args.length - 1) return message.reply(commandConfig.wrong_usage.replace("%USAGE%", command.usage));
+        if (args.length < need_args.length - 1) return events.emit("no_args", message);
     }
 
     if (command.permissions) {
         const member_perms = message.channel.permissionsFor(message.author);
-        if (!member_perms.has(command.permissions)) {
-            return message.reply(commandConfig.permission_message.replace("%PERM%",
-                command.permissions.find(x => !member_perms.has(x))));
-        }
+        if (!member_perms.has(command.permissions))
+            return events.emit("no_perm", message, command.permissions.find(x => !member_perms.has(x)));
     }
 
     const now = Date.now();
@@ -77,9 +75,7 @@ module.exports.messageReceived = (message) => {
 
         if (now < expirationTime) {
             const timeLeft = (expirationTime - now) * 0.001;
-            return message.reply(commandConfig.cooldown_message
-                .replace("%TIME%", timeLeft.toFixed(1))
-                .replace("%CMD%", command_name));
+            return events.emit("cooldown", message, timeLeft);
         }
     }
 
@@ -96,13 +92,10 @@ module.exports.messageReceived = (message) => {
 module.exports.wsInteractionReceived = SlashHandler.onInteraction;
 
 class CommandHandlerConfiguration {
-    constructor(client, prefix, ignore_bot, cooldown_message, permission_message, wrong_usage) {
+    constructor(client, prefix, ignore_bot) {
         this.client = client;
         this.prefix = prefix;
         this.ignore_bot = ignore_bot;
-        this.cooldown_message = cooldown_message;
-        this.permission_message = permission_message;
-        this.wrong_usage = wrong_usage;
     }
 }
 

@@ -13,12 +13,10 @@ const client = new discord.Client();
 
 // (client: Discord.Client, prefix: string, ignore_bot: boolean, cooldown_message: string, permission_message: string, wrong_usage_message: string)
 const commandConfig = new handler.CommandConfig(
-    client,
-    "!",
-    true,
-    "Wait %TIME% seconds to execute %CMD%",
-    "You dont has permission `%PERM%` to execute this command",
-    "The correct usage is `%USAGE%`");
+    client, // client instance
+    "!", // prefix
+    true // ignore bot messages
+);
 
 
 handler.setup(commandConfig);
@@ -57,6 +55,14 @@ client.on("message", message => {
 ```js
 handler.events.on("command_error", e => {
     console.log(e);
+}) // erros nos comandos
+
+handler.events.on("cooldown", (message, timeLeft) => {
+    message.reply(`Aguarde ${timeLeft} segundos para executar esse comando novamente`);
+}) // evento emitido quando o cooldown nao resetou
+
+handler.events.on("no_perm", (message, permission) => {
+    message.reply(`Voce nao tem a permissao ${permission} para executar este comando`);
 })
 ```
 

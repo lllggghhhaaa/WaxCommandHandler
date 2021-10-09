@@ -4,11 +4,10 @@
     "type": "git",
     "url": "https://github.com/lllggghhhaaa/WaxCommandHandler.git"
   },
-  "version": "1.0.9",
+  "version": "1.1.1",
   "description": "Command handler for discord.js",
   "main": "CommandHandler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [ "discord.js", "command-handler" ],
   "author": "lllggghhhaaa",
