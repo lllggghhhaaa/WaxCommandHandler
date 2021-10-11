@@ -2,7 +2,7 @@ const SlashHandler = require("./SlashHandler");
 const { Collection } = require("discord.js");
 const { EventEmitter } = require("events");
 
-let commandConfig = new CommandHandlerConfiguration();
+let commandConfig;
 
 const commands = new Collection();
 const cooldowns = new Collection();
