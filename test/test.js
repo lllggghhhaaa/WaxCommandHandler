@@ -8,7 +8,8 @@ const client = new Client();
 const commandConfig = new handler.CommandConfig(
     client,
     "!",
-    true);
+    true,
+    __dirname + "\\prefixes");
 
 handler.setup(commandConfig);
 
@@ -23,11 +24,15 @@ client.on("ready", () => {
 
         //if(command.slash) handler.listSlashCommand(command);
     }
+
+    console.log("ready")
 });
 
 client.on("message", message => {
     handler.messageReceived(message);
 });
+
+handler.events.on("command_error", e => console.log(e))
 
 //client.ws.on("INTERACTION_CREATE", async data => {
     //handler.wsInteractionReceived(data);

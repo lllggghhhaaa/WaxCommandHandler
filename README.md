@@ -15,7 +15,8 @@ const client = new discord.Client();
 const commandConfig = new handler.CommandConfig(
     client, // client instance
     "!", // prefix
-    true // ignore bot messages
+    true, // ignore bot messages
+    __dirname + "\\prefixes" // prefix data path
 );
 
 
@@ -38,6 +39,8 @@ client.on("ready", () => {
         // IF THE COMMAND IS REGISTERED USE THIS INSTEANDED
         if(command.slash) handler.listSlashCommand(command);
     }
+
+    console.log("ready");
 });
 
 client.login("token");
@@ -119,6 +122,18 @@ module.exports = {
         handler.postSlashMessage(data, "it's work, it's magic!")
     }
 };
+```
+
+#### pegando o prefixo
+
+```js
+let prefix = client.prefixManager.getPrefix(guildId);
+```
+
+#### mudando prefixo
+
+```js
+client.prefixManager.setPrefix(guildId, prefix);
 ```
 
 #### listar comandos

@@ -1,6 +1,7 @@
 const SlashHandler = require("./SlashHandler");
 const { Collection } = require("discord.js");
 const { EventEmitter } = require("events");
+const prefixManager = require("./PrefixMap");
 
 let commandConfig;
 
@@ -16,6 +17,9 @@ module.exports = {
 module.exports.setup = (cmdConfig) => {
     commandConfig = cmdConfig;
     commandConfig.client.handler = this;
+    commandConfig.client.prefixManager = prefixManager;
+
+    prefixManager.setPath(commandConfig.path);
 }
 
 module.exports.useSlashHandler = () => {
@@ -39,10 +43,12 @@ module.exports.useDefaultHelp = () => {
 
 module.exports.messageReceived = (message) => {
     if (commandConfig.ignore_bot && message.author.bot) return;
-    if (!message.content.startsWith(commandConfig.prefix)) return;
 
+    let prefix = prefixManager.getPrefix(message.guild.id) || commandConfig.prefix;
 
-    const args = message.content.slice(commandConfig.prefix.length).trim().split(/ +/);
+    if (!message.content.startsWith(prefix)) return;
+
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command_name = args.shift().toLowerCase();
 
     const command = commands.get(command_name)
@@ -92,10 +98,11 @@ module.exports.messageReceived = (message) => {
 module.exports.wsInteractionReceived = SlashHandler.onInteraction;
 
 class CommandHandlerConfiguration {
-    constructor(client, prefix, ignore_bot) {
+    constructor(client, prefix, ignore_bot, path) {
         this.client = client;
         this.prefix = prefix;
         this.ignore_bot = ignore_bot;
+        this.path = path;
     }
 }
 
