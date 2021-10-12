@@ -54,6 +54,14 @@ client.on("message", message => {
 });
 ```
 
+#### executando comandos
+```js
+handler.events.on("command_executed", async (command, client, message, args) => {
+    // ...
+    await handler.executeCommand(command, client, message, args);
+});
+```
+
 #### recebendo erros
 ```js
 handler.events.on("command_error", e => {

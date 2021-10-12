@@ -34,6 +34,11 @@ client.on("message", message => {
 
 handler.events.on("command_error", e => console.log(e))
 
+handler.events.on("command_executed", async (command, client, message, args) => {
+    // ...
+   await handler.executeCommand(command, client, message, args);
+});
+
 //client.ws.on("INTERACTION_CREATE", async data => {
     //handler.wsInteractionReceived(data);
 //});

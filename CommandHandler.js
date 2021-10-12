@@ -20,6 +20,7 @@ module.exports.setup = (cmdConfig) => {
     commandConfig.client.prefixManager = prefixManager;
 
     prefixManager.setPath(commandConfig.path);
+    prefixManager.setDefault(commandConfig.prefix);
 }
 
 module.exports.useSlashHandler = () => {
@@ -44,7 +45,7 @@ module.exports.useDefaultHelp = () => {
 module.exports.messageReceived = (message) => {
     if (commandConfig.ignore_bot && message.author.bot) return;
 
-    let prefix = prefixManager.getPrefix(message.guild.id) || commandConfig.prefix;
+    let prefix = prefixManager.getPrefix(message.guild.id);
 
     if (!message.content.startsWith(prefix)) return;
 
@@ -88,6 +89,10 @@ module.exports.messageReceived = (message) => {
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
+    events.emit("command_executed", command, commandConfig.client, message, args);
+}
+
+module.exports.executeCommand = async (command, client, message, args) => {
     try {
         command.execute(commandConfig.client, message, args);
     } catch (e) {
