@@ -64,7 +64,7 @@ module.exports.messageReceived = (message) => {
     if (command.usage) {
         let need_args = command.usage.split(' ');
 
-        if (args.length < need_args.length - 1) return events.emit("no_args", message);
+        if (args.length < need_args.length - 1) return events.emit("no_args", message, command);
     }
 
     if (command.permissions) {
