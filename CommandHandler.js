@@ -14,6 +14,10 @@ module.exports = {
     events
 }
 
+process.on('unhandledRejection', error => {
+    events.emit("command_error", error);
+});
+
 module.exports.setup = (cmdConfig) => {
     commandConfig = cmdConfig;
     commandConfig.client.handler = this;
@@ -94,7 +98,7 @@ module.exports.messageReceived = (message) => {
 
 module.exports.executeCommand = async (command, client, message, args) => {
     try {
-        command.execute(commandConfig.client, message, args);
+        await command.execute(commandConfig.client, message, args);
     } catch (e) {
         events.emit("command_error", e);
     }

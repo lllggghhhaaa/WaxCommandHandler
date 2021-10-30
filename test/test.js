@@ -1,9 +1,12 @@
-const { Client } = require("discord.js");
+const { Client,Intents } = require("discord.js");
 const { token } = require("./config.json");
 const { readdirSync } = require("fs");
 const handler = require("../CommandHandler");
 
-const client = new Client();
+const client = new Client({ intents: [ Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_MESSAGES
+    ]});
 
 const commandConfig = new handler.CommandConfig(
     client,
@@ -28,7 +31,7 @@ client.on("ready", () => {
     console.log("ready")
 });
 
-client.on("message", message => {
+client.on("messageCreate", message => {
     handler.messageReceived(message);
 });
 
