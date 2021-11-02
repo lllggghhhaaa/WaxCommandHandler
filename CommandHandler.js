@@ -27,8 +27,8 @@ module.exports.setup = (cmdConfig) => {
     prefixManager.setDefault(commandConfig.prefix);
 }
 
-module.exports.useSlashHandler = () => {
-    SlashHandler.setupSlash(commandConfig.client, this);
+module.exports.useSlashHandler = async () => {
+    await SlashHandler.setupSlash(commandConfig.client, this);
 }
 
 function addCommand(command) {

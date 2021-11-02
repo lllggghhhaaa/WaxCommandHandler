@@ -1,12 +1,26 @@
+const fetch = require('node-fetch');
 const { Collection } = require("discord.js");
 
+let commands;
 let discord_client;
 let handler;
 
-module.exports.setupSlash = (client, command_handler) => {
+function listSlashCommand () {
+    return fetch(`https://discord.com/api/v9/applications/${discord_client.user.id}/commands`, {
+        headers: {
+            "Authorization": "Bot " + discord_client.token
+        }
+    }).then(response => response.text());
+}
+
+module.exports.setupSlash = async (client, command_handler) => {
     discord_client = client;
     handler = command_handler;
     handler.slashCommands = new Collection();
+
+    await Promise.resolve(listSlashCommand().then(data => {
+        commands = JSON.parse(data);
+    }));
 }
 
 const get_application = (guild_id) => {
@@ -15,22 +29,22 @@ const get_application = (guild_id) => {
 
 module.exports.getApplication = get_application;
 
-function listSlashCommand (command) {
-    handler.slashCommands.set(command.name, command);
-}
-
 module.exports.listSlashCommand = listSlashCommand;
 
 module.exports.addSlashCommand = (command, options) => {
 
-    get_application().commands.post({
-        data: {
-            name: command.name,
-            description: command.description,
-            options: options
-        }});
+    if (!commands.some(cmd => cmd.name === command.name)) {
 
-    listSlashCommand(command);
+        get_application().commands.post({
+            data: {
+                name: command.name,
+                description: command.description,
+                options: options
+            }
+        });
+    }
+
+    handler.slashCommands.set(command.name, command);
 }
 
 module.exports.onInteraction = (data) => {

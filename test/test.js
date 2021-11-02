@@ -16,8 +16,8 @@ const commandConfig = new handler.CommandConfig(
 
 handler.setup(commandConfig);
 
-client.on("ready", () => {
-    // handler.useSlashHandler();
+client.on("ready", async () => {
+    await handler.useSlashHandler();
 
     handler.useDefaultHelp(handler);
 
@@ -25,7 +25,7 @@ client.on("ready", () => {
         const command = require(`./Commands/${file}`);
         handler.addCommand(command);
 
-        //if(command.slash) handler.listSlashCommand(command);
+        if(command.slash) handler.addSlashCommand(command);
     }
 
     console.log("ready")
@@ -42,8 +42,8 @@ handler.events.on("command_executed", async (command, client, message, args) => 
    await handler.executeCommand(command, client, message, args);
 });
 
-//client.ws.on("INTERACTION_CREATE", async data => {
-    //handler.wsInteractionReceived(data);
-//});
+client.ws.on("INTERACTION_CREATE", async data => {
+    handler.wsInteractionReceived(data);
+});
 
 client.login(token);
