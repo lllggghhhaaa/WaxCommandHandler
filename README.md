@@ -11,7 +11,7 @@ const discord = require("discord.js");
 const client = new discord.Client();
 
 
-// (client: Discord.Client, prefix: string, ignore_bot: boolean, cooldown_message: string, permission_message: string, wrong_usage_message: string)
+// (client: Discord.Client, prefix: string, ignore_bot: boolean, path: string)
 const commandConfig = new handler.CommandConfig(
     client, // client instance
     "!", // prefix

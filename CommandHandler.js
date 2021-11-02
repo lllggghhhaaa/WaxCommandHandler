@@ -14,9 +14,7 @@ module.exports = {
     events
 }
 
-process.on('unhandledRejection', error => {
-    events.emit("command_error", error);
-});
+process.on('unhandledRejection', error => events.emit("command_error", error));
 
 module.exports.setup = (cmdConfig) => {
     commandConfig = cmdConfig;

@@ -12,7 +12,6 @@ function setDefault(prefix) {
 }
 
 function setPrefix(guildId, prefix) {
-    console.log(datapath)
     writeFileSync(datapath + "/" + guildId + ".txt", prefix);
 }
 
