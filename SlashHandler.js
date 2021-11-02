@@ -52,9 +52,11 @@ module.exports.onInteraction = (data) => {
 
     const params = new Map();
 
-    data.data.options.forEach(option => {
-        params.set(option.name, option.value);
-    });
+    if (typeof data.data.options != "undefined") {
+        data.data.options.forEach(option => {
+            params.set(option.name, option.value);
+        });
+    }
 
     command.slash(discord_client, this, data, params);
 }
