@@ -23,7 +23,7 @@ module.exports.setupSlash = async (client, command_handler) => {
     }));
 }
 
-const get_application = (guild_id) => {
+const get_application = () => {
     return discord_client.api.applications(discord_client.user.id);
 }
 
@@ -31,7 +31,7 @@ module.exports.getApplication = get_application;
 
 module.exports.listSlashCommand = listSlashCommand;
 
-module.exports.addSlashCommand = (command, options) => {
+module.exports.addSlashCommand = (command) => {
 
     if (!commands.some(cmd => cmd.name === command.name)) {
 
@@ -39,7 +39,7 @@ module.exports.addSlashCommand = (command, options) => {
             data: {
                 name: command.name,
                 description: command.description,
-                options: options
+                options: command.slash_params
             }
         });
     }
@@ -50,7 +50,13 @@ module.exports.addSlashCommand = (command, options) => {
 module.exports.onInteraction = (data) => {
     const command = handler.slashCommands.get(data.data.name);
 
-    command.slash(discord_client, this, data);
+    const params = new Map();
+
+    data.data.options.forEach(option => {
+        params.set(option.name, option.value);
+    });
+
+    command.slash(discord_client, this, data, params);
 }
 
 function postSlashMessage(data, message) {
@@ -65,3 +71,19 @@ function postSlashMessage(data, message) {
 }
 
 module.exports.postSlashMessage = postSlashMessage;
+
+function deleteCommand(id) {
+    fetch(`https://discord.com/api/v9/applications/${discord_client.user.id}/commands/${id}`, {
+        headers: {
+            "Authorization": "Bot " + discord_client.token
+        },
+        method: "DELETE"
+    })
+}
+
+module.exports.deleteCommand = deleteCommand;
+
+module.exports.deleteALlCommands = () => {
+    commands.forEach((command) =>
+        deleteCommand(command.id))
+}

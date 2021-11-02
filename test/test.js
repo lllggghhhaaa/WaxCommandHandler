@@ -28,7 +28,7 @@ client.on("ready", async () => {
         if(command.slash) handler.addSlashCommand(command);
     }
 
-    console.log("ready")
+    console.log("ready");
 });
 
 client.on("messageCreate", message => {
@@ -38,7 +38,6 @@ client.on("messageCreate", message => {
 handler.events.on("command_error", e => console.log(e))
 
 handler.events.on("command_executed", async (command, client, message, args) => {
-    // ...
    await handler.executeCommand(command, client, message, args);
 });
 

@@ -36,6 +36,8 @@ function addCommand(command) {
 
 module.exports.addSlashCommand = SlashHandler.addSlashCommand;
 module.exports.listSlashCommand = SlashHandler.listSlashCommand;
+module.exports.deleteSlashCommand = SlashHandler.deleteCommand;
+module.exports.deleteAllSlashCommands = SlashHandler.deleteALlCommands;
 
 module.exports.addCommand = addCommand;
 

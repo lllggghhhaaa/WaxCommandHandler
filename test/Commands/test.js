@@ -8,7 +8,14 @@ module.exports = {
     execute(client, message, args) {
         message.channel.send("it's work, it's magic!");
     },
-    slash(client, handler, data) {
-        handler.postSlashMessage(data, "it's work, it's magic!");
+    slash_params: [{
+        name: "texto",
+        description: "texto retornativo",
+        type: 3,
+        required: true
+    }],
+    slash(client, handler, data, params) {
+        const texto = params.get("texto");
+        handler.postSlashMessage(data, "it's work, it's magic!" + " `" + texto + "`");
     }
 };

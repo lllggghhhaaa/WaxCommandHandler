@@ -123,11 +123,30 @@ module.exports = {
     execute(client, message, args) {
         message.channel.send("it's work, it's magic!");
     },
-    slash(client, handler, data) {
-        handler.postSlashMessage(data, "it's work, it's magic!")
+    slash_params: [{
+        name: "texto",
+        description: "texto retornativo",
+        type: 3,
+        required: true
+    }],
+    slash(client, handler, data, params) {
+        const texto = params.get("texto");
+        handler.postSlashMessage(data, "it's work, it's magic!" + " `" + texto + "`");
     }
 };
 ```
+
+#### tipos de parametros
+<p>SUB_COMMAND: 1</p>
+<p>SUB_COMMAND_GROUP: 2</p>
+<p>STRING: 3</p>
+<p>INTEGER: 4 (Any integer between -2^53 and 2^53)</p>
+<p>BOOLEAN: 5</p>
+<p>USER: 6</p>
+<p>CHANNEL: 7 (Includes all channel types + categories)</p>
+<p>ROLE: 8</p>
+<p>MENTIONABLE: 9 (Includes users and roles)</p>
+<p>NUMBER: 10 (Any double between -2^53 and 2^53)</p>
 
 #### pegando o prefixo
 
