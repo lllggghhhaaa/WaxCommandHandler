@@ -127,7 +127,7 @@ module.exports.messageReceived = (message) => {
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-    events.emit("command_executed", command, commandConfig.client, message, args);
+    events.emit("command_executed", command, commandConfig.client, message, p_args);
 }
 
 module.exports.executeCommand = async (command, client, message, args) => {
