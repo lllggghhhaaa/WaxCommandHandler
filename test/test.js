@@ -19,8 +19,6 @@ handler.setup(commandConfig);
 client.on("ready", async () => {
     await handler.useSlashHandler();
 
-    handler.useDefaultHelp(handler);
-
     for (const file of readdirSync(__dirname + "/Commands").filter(file => file.endsWith('.js'))) {
         const command = require(`./Commands/${file}`);
         handler.addCommand(command);
@@ -39,6 +37,10 @@ handler.events.on("command_error", e => console.log(e))
 
 handler.events.on("command_executed", async (command, client, message, args) => {
    await handler.executeCommand(command, client, message, args);
+});
+
+handler.events.on("invalid_args", (args, message, command) => {
+   message.reply("Escreve sa porra direito: " + command.usage);
 });
 
 client.ws.on("INTERACTION_CREATE", async data => {

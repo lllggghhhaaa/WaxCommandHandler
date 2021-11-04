@@ -2,6 +2,9 @@ const SlashHandler = require("./SlashHandler");
 const { Collection } = require("discord.js");
 const { EventEmitter } = require("events");
 const prefixManager = require("./PrefixMap");
+const argsProcessor = require("./ArgsProcessor");
+
+// global var
 
 let commandConfig;
 
@@ -9,14 +12,25 @@ const commands = new Collection();
 const cooldowns = new Collection();
 const events = new EventEmitter();
 
-module.exports = {
-    commands,
-    events
-}
-
 process.on('unhandledRejection', error => events.emit("command_error", error));
 
-module.exports.setup = (cmdConfig) => {
+class CommandConfig {
+    constructor(client, prefix, ignore_bot, path) {
+        this.client = client;
+        this.prefix = prefix;
+        this.ignore_bot = ignore_bot;
+        this.path = path;
+    }
+}
+
+class InvArgStruct {
+    constructor(arg, index) {
+        this.arg = arg;
+        this.index = index;
+    }
+}
+
+function setup(cmdConfig) {
     commandConfig = cmdConfig;
     commandConfig.client.handler = this;
     commandConfig.client.prefixManager = prefixManager;
@@ -25,7 +39,7 @@ module.exports.setup = (cmdConfig) => {
     prefixManager.setDefault(commandConfig.prefix);
 }
 
-module.exports.useSlashHandler = async () => {
+async function useSlashHandler() {
     await SlashHandler.setupSlash(commandConfig.client, this);
 }
 
@@ -34,17 +48,23 @@ function addCommand(command) {
     commands.set(command.name, command);
 }
 
+// exporting modules
+
+module.exports = {
+    commands,
+    events,
+    setup,
+    useSlashHandler,
+    addCommand,
+    CommandConfig,
+    argsProcessor
+}
+
 module.exports.addSlashCommand = SlashHandler.addSlashCommand;
 module.exports.listSlashCommand = SlashHandler.listSlashCommand;
 module.exports.deleteSlashCommand = SlashHandler.deleteCommand;
 module.exports.deleteAllSlashCommands = SlashHandler.deleteALlCommands;
-
-module.exports.addCommand = addCommand;
-
-module.exports.useDefaultHelp = () => {
-    const helpCommand = require("./defaultCommands/help");
-    addCommand(helpCommand);
-}
+module.exports.wsInteractionReceived = SlashHandler.onInteraction;
 
 module.exports.messageReceived = (message) => {
     if (commandConfig.ignore_bot && message.author.bot) return;
@@ -55,6 +75,8 @@ module.exports.messageReceived = (message) => {
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command_name = args.shift().toLowerCase();
+
+    const p_args = argsProcessor.process(commandConfig.client, message, args);
 
     const command = commands.get(command_name)
         || commands.find(cmd => cmd.aliases && cmd.aliases.includes(command_name));
@@ -67,8 +89,20 @@ module.exports.messageReceived = (message) => {
 
     if (command.usage) {
         let need_args = command.usage.split(' ');
+        if (p_args.length < need_args.length - 1) return events.emit("no_args", message, command);
+        need_args.shift();
 
-        if (args.length < need_args.length - 1) return events.emit("no_args", message, command);
+        for (let i = 0; i < need_args.length; i++) {
+            let value = need_args[i];
+
+            if (value === argsProcessor.types.ANY) continue;
+
+            if (value.startsWith("<") && value.endsWith(">")) {
+                value = value.slice(1, -1);
+
+                if (p_args[i].type !== value) return events.emit("invalid_args", new InvArgStruct(value, i), message, command);
+            }
+        }
     }
 
     if (command.permissions) {
@@ -103,16 +137,3 @@ module.exports.executeCommand = async (command, client, message, args) => {
         events.emit("command_error", e);
     }
 }
-
-module.exports.wsInteractionReceived = SlashHandler.onInteraction;
-
-class CommandHandlerConfiguration {
-    constructor(client, prefix, ignore_bot, path) {
-        this.client = client;
-        this.prefix = prefix;
-        this.ignore_bot = ignore_bot;
-        this.path = path;
-    }
-}
-
-module.exports.CommandConfig = CommandHandlerConfiguration;

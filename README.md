@@ -2,13 +2,13 @@
 
 #### Instalando
 `npm i wax-command-handler`
-
-#### coloque no arquivo principal do bot
+#### Coloque no arquivo principal do bot
 ```js
 const handler = require("wax-command-handler");
-const discord = require("discord.js");
+const { Client, Intents } = require("discord.js");
 
-const client = new discord.Client();
+// Intents necessarios para eventos de mensagens
+const client = new Client({intents: [ Intents.FLAGS.GUILD_MESSAGES ]});
 
 
 // (client: Discord.Client, prefix: string, ignore_bot: boolean, path: string)
@@ -20,20 +20,19 @@ const commandConfig = new handler.CommandConfig(
 );
 
 
+// inicializa o handler
 handler.setup(commandConfig);
 
 client.on("ready", () => {
-    // to use default help
+    // inicializar handler para slash
     handler.useSlashHandler();
-
-    // to use slash commands
-    handler.useDefaultHelp(handler);
     
+    // registrando os comandos de uma pasta
     for (const file of readdirSync(__dirname + "/Commands").filter(file => file.endsWith('.js'))) {
         const command = require(`./Commands/${file}`);
         handler.addCommand(command);
 
-        // to register slash command
+        // registrar slash commands
         if(command.slash) handler.addSlashCommand(command);
     }
 
@@ -43,46 +42,57 @@ client.on("ready", () => {
 client.login("token");
 ```
 
-#### no evento "message" do client
+#### No evento "messageCreate" do client
 ```js
-client.on("message", message => {
+client.on("messageCreate", message => {
     // ...
     handler.messageReceived(message);
 });
 ```
+`nota: evento "message" deprecado`
 
-#### executando comandos
+#### Executando comandos
 ```js
 handler.events.on("command_executed", async (command, client, message, args) => {
-    // ...
+    // processe sua ceira
+    
     await handler.executeCommand(command, client, message, args);
 });
 ```
 
-#### recebendo erros
+#### Recebendo erros
 ```js
 handler.events.on("command_error", e => {
     console.log(e);
-}) // erros nos comandos
+}); // evento emitido quando ocorre algum erro
 
 handler.events.on("cooldown", (message, timeLeft) => {
     message.reply(`Aguarde ${timeLeft} segundos para executar esse comando novamente`);
-}) // evento emitido quando o cooldown nao resetou
+}); // evento emitido quando o cooldown nao resetou
 
 handler.events.on("no_perm", (message, permission) => {
     message.reply(`Voce nao tem a permissao ${permission} para executar este comando`);
-})
+}); // evento emitido quando o usuario nao tem permissao para executar o comando
+
+handler.events.on("no_args", (message, command) => {
+    message.reply("Uso correto: " + command.usage);
+}); // evento emitido quando a quantidade de argumentos e menor do que o uso do comando
+
+handler.events.on("invalid_args", (args, message, command) => {
+    message.reply("Uso correto: " + command.usage);
+}); // evento emitido quando o tipo do argumento e diferente do que o uso do comando
 ```
 
-#### se for usar slash commands
+#### Se for usar slash commands
 ```js
 client.ws.on("INTERACTION_CREATE", async data => {
-    // ...
+    // processe sua ceira
+    
     handler.wsInteractionReceived(data);
 })
 ```
 
-#### exemplo de comando
+#### Exemplo de comando
 ```js
 // sem nenhum parametro
 
@@ -103,14 +113,34 @@ module.exports = {
     name: "test2",
     description: "testing commands",
     aliases: [ "t2", "guei2" ],
-    usage: "test <message>",
+    usage: "test <any> <member>",
     cooldown: 5,
     permissions: [ "ADMINISTRATOR" ],
     execute(client, message, args) {
         message.channel.send(args[0]);
     },
 };
+```
 
+#### Sobre os parametros dos comandos (usage)
+
+Caso o comando seja executado de maneira correta, o evento **command_executed** será chamado, caso contrario, o evento **invalid_args** será chamado
+
+Uso: `usage: "nome <tipo_argumento1> <tipo_argumento_2>"`
+
+Ex:
+`usage: "sum <number> <number>"`
+
+Tipos
+
+- "any" (ignora qualquer tipo, retorna string)
+- "string" (permite que nao seja nenhum dos outros abaixo, retorna string)
+- "number" (permite que seja apenas um numero, retorna number)
+- "member" (permite que seja apenas um membro em uma mencao <@id>, retorna GuildMember)
+- "channel" (permite que seja apenas um canal em uma mencao <#id>, retorna TextChannel)
+- "role" (permite que seja apenas um cargo em uma mencao <@&id>, retorna Role)
+
+```js
 // com slash commands
 
 module.exports = {
@@ -136,7 +166,7 @@ module.exports = {
 };
 ```
 
-#### tipos de parametros
+#### Tipos de parametros
 <p>SUB_COMMAND: 1</p>
 <p>SUB_COMMAND_GROUP: 2</p>
 <p>STRING: 3</p>
@@ -148,27 +178,31 @@ module.exports = {
 <p>MENTIONABLE: 9 (Includes users and roles)</p>
 <p>NUMBER: 10 (Any double between -2^53 and 2^53)</p>
 
-#### pegando o prefixo
+#### Sobre o prefix manager
 
 ```js
-let prefix = client.prefixManager.getPrefix(guildId);
+const prefixManager = client.prefixManager;
+
+// Pega o prefixo registrado em um servidor (ou o padrão caso indefinido)
+const prefix = prefixManager.getPrefix(guildId);
+
+// Muda o prefixo de um servidor
+prefixManager.setPrefix(guildId, prefix);
+
+// Muda o prefixo padrão
+prefixManager.setDefault(prefix);
 ```
 
-#### mudando prefixo
+#### Listar comandos
 
 ```js
-client.prefixManager.setPrefix(guildId, prefix);
-```
-
-#### listar comandos
-
-```js
-// from handler
 let commands = handler.commands;
-
-// from client
-let commands = client.handler.commands;
 
 // slash command
 client.handler.listSlashCommand();
 ```
+
+### Links externos
+
+[WaxCommandHandler](https://www.npmjs.com/package/wax-command-handler): Link do NPM do WaxCommandHandler <br/>
+[Alonsal](https://github.com/brnd-21/Alonsal): Bot movido pelo WaxCommandHandler e muita ceira

@@ -1,6 +1,8 @@
 const fetch = require('node-fetch');
 const { Collection } = require("discord.js");
 
+// global var
+
 let commands;
 let discord_client;
 let handler;
@@ -13,6 +15,36 @@ function listSlashCommand () {
     }).then(response => response.text());
 }
 
+function get_application() {
+    return discord_client.api.applications(discord_client.user.id);
+}
+
+function postSlashMessage(data, message) {
+    discord_client.api.interactions(data.id, data.token).callback.post({
+        data: {
+            type: 4,
+            data: {
+                content: message
+            }
+        }
+    });
+}
+
+function deleteCommand(id) {
+    fetch(`https://discord.com/api/v9/applications/${discord_client.user.id}/commands/${id}`, {
+        headers: {
+            "Authorization": "Bot " + discord_client.token
+        },
+        method: "DELETE"
+    })
+}
+
+module.exports = {
+    listSlashCommand,
+    postSlashMessage,
+    deleteCommand
+}
+
 module.exports.setupSlash = async (client, command_handler) => {
     discord_client = client;
     handler = command_handler;
@@ -23,18 +55,9 @@ module.exports.setupSlash = async (client, command_handler) => {
     }));
 }
 
-const get_application = () => {
-    return discord_client.api.applications(discord_client.user.id);
-}
-
-module.exports.getApplication = get_application;
-
-module.exports.listSlashCommand = listSlashCommand;
-
 module.exports.addSlashCommand = (command) => {
 
     if (!commands.some(cmd => cmd.name === command.name)) {
-
         get_application().commands.post({
             data: {
                 name: command.name,
@@ -60,30 +83,6 @@ module.exports.onInteraction = (data) => {
 
     command.slash(discord_client, this, data, params);
 }
-
-function postSlashMessage(data, message) {
-    discord_client.api.interactions(data.id, data.token).callback.post({
-        data: {
-            type: 4,
-            data: {
-                content: message
-            }
-        }
-    });
-}
-
-module.exports.postSlashMessage = postSlashMessage;
-
-function deleteCommand(id) {
-    fetch(`https://discord.com/api/v9/applications/${discord_client.user.id}/commands/${id}`, {
-        headers: {
-            "Authorization": "Bot " + discord_client.token
-        },
-        method: "DELETE"
-    })
-}
-
-module.exports.deleteCommand = deleteCommand;
 
 module.exports.deleteALlCommands = () => {
     commands.forEach((command) =>
