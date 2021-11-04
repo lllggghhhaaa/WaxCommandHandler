@@ -93,12 +93,12 @@ module.exports.messageReceived = (message) => {
         need_args.shift();
 
         for (let i = 0; i < need_args.length; i++) {
-            let value = need_args[i];
-
-            if (value === argsProcessor.types.ANY) continue;
+            let value = need_args[i].toLowerCase();
 
             if (value.startsWith("<") && value.endsWith(">")) {
                 value = value.slice(1, -1);
+
+                if (value === argsProcessor.types.ANY) continue;
 
                 if (p_args[i].type !== value) return events.emit("invalid_args", new InvArgStruct(value, i), message, command);
             }
