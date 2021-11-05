@@ -113,11 +113,17 @@ module.exports = {
     name: "test2",
     description: "testing commands",
     aliases: [ "t2", "guei2" ],
-    usage: "test <any> <member>",
+    usage: "test <member|number>",
     cooldown: 5,
     permissions: [ "ADMINISTRATOR" ],
-    execute(client, message, args) {
-        message.channel.send(args[0]);
+    async execute(client, message, args) {
+        let member = args[0].value;
+
+        if (args[0].type === "number")
+            await message.guild.members.fetch(args[0].toString())
+                .then(user => member = user);
+
+        message.reply(member.user.username);
     },
 };
 ```
@@ -128,6 +134,8 @@ Caso o comando seja executado de maneira correta, o evento **command_executed** 
 
 Uso: `usage: "nome <tipo_argumento1> <tipo_argumento_2>"`
 
+Operador `|` permite multiplos tipos
+
 Ex:
 `usage: "sum <number> <number>"`
 
@@ -135,7 +143,7 @@ Tipos
 
 - "any" (ignora qualquer tipo, retorna string)
 - "string" (permite que nao seja nenhum dos outros abaixo, retorna string)
-- "number" (permite que seja apenas um numero, retorna number)
+- "number" (permite que seja apenas um numero, retorna BigInt)
 - "member" (permite que seja apenas um membro em uma mencao <@id>, retorna GuildMember)
 - "channel" (permite que seja apenas um canal em uma mencao <#id>, retorna TextChannel)
 - "role" (permite que seja apenas um cargo em uma mencao <@&id>, retorna Role)

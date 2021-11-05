@@ -98,9 +98,11 @@ module.exports.messageReceived = (message) => {
             if (value.startsWith("<") && value.endsWith(">")) {
                 value = value.slice(1, -1);
 
-                if (value === argsProcessor.types.ANY) continue;
+                const supported_types = value.slice("|");
 
-                if (p_args[i].type !== value) return events.emit("invalid_args", new InvArgStruct(value, i), message, command);
+                if (value.includes(argsProcessor.types.ANY)) continue;
+
+                if (!supported_types.includes(p_args[i].type)) return events.emit("invalid_args", new InvArgStruct(value, i), message, command);
             }
         }
     }

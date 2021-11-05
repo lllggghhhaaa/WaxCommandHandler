@@ -36,7 +36,7 @@ module.exports.process = (client, message, args) => {
             arg_obj.value = message.guild.roles.cache.get(id);
         } else if (!isNaN(arg_obj)) {
             arg_obj.type = types.NUMBER;
-            arg_obj.value = Number(arg_obj);
+            arg_obj.value = BigInt(arg_obj);
         } else {
             arg_obj.type = types.STRING
         }
