@@ -66,7 +66,7 @@ module.exports.deleteSlashCommand = SlashHandler.deleteCommand;
 module.exports.deleteAllSlashCommands = SlashHandler.deleteALlCommands;
 module.exports.wsInteractionReceived = SlashHandler.onInteraction;
 
-module.exports.messageReceived = (message) => {
+module.exports.messageReceived = message => {
     if (commandConfig.ignore_bot && message.author.bot) return;
 
     let prefix = prefixManager.getPrefix(message.guild.id);
@@ -98,7 +98,7 @@ module.exports.messageReceived = (message) => {
             if (value.startsWith("<") && value.endsWith(">")) {
                 value = value.slice(1, -1);
 
-                const supported_types = value.slice("|");
+                const supported_types = value.slice('|');
 
                 if (value.includes(argsProcessor.types.ANY)) continue;
 
