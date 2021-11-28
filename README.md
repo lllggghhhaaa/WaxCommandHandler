@@ -120,7 +120,7 @@ module.exports = {
         let member = args[0].value;
 
         if (args[0].type === "number")
-            await message.guild.members.fetch(args[0].toString())
+            await message.guild.members.fetch(args[0].raw)
                 .then(user => member = user);
 
         message.reply(member.user.username);
@@ -214,3 +214,5 @@ client.handler.listSlashCommand();
 
 [WaxCommandHandler](https://www.npmjs.com/package/wax-command-handler): Link do NPM do WaxCommandHandler <br/>
 [Alonsal](https://github.com/brnd-21/Alonsal): Bot movido pelo WaxCommandHandler e muita ceira
+
+<img src="assets/CeiraSolutions.png">

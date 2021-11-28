@@ -13,30 +13,32 @@ module.exports.process = (client, message, args) => {
     const p_args = [];
 
     args.forEach((value) => {
-        const arg_obj = new String(value);
+        const arg_obj = { };
 
-        if (arg_obj.match(USERS_PATTERN)) {
+        arg_obj.raw = value;
+
+        if (value.match(USERS_PATTERN)) {
             arg_obj.type = types.MEMBER;
 
-            let id = arg_obj.slice(2, -1);
+            let id = value.slice(2, -1);
 
             if (id.startsWith('!'))
                 id = id.slice(1);
 
             arg_obj.value = message.guild.members.cache.get(id);
-        } else if (arg_obj.match(CHANNELS_PATTERN)) {
+        } else if (value.match(CHANNELS_PATTERN)) {
             arg_obj.type = types.CHANNEL;
 
-            const id = arg_obj.slice(2, -1);
+            const id = value.slice(2, -1);
             arg_obj.value = client.channels.cache.get(id);
-        } else if (arg_obj.match(ROLES_PATTERN)) {
+        } else if (value.match(ROLES_PATTERN)) {
             arg_obj.type = types.ROLE;
 
-            const id = arg_obj.slice(3, -1);
+            const id = value.slice(3, -1);
             arg_obj.value = message.guild.roles.cache.get(id);
-        } else if (!isNaN(arg_obj)) {
+        } else if (!isNaN(value)) {
             arg_obj.type = types.NUMBER;
-            arg_obj.value = BigInt(arg_obj);
+            arg_obj.value = BigInt(arg_obj.raw);
         } else {
             arg_obj.type = types.STRING
         }

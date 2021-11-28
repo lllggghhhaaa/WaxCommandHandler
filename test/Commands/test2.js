@@ -6,6 +6,8 @@ module.exports = {
     cooldown: 5,
     permissions: [ "ADMINISTRATOR" ],
     async execute(client, message, args) {
+        message.reply(args[0].raw)
+
         let member = args[0].value;
 
         if (args[0].type === "number")
