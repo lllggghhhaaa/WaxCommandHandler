@@ -11,11 +11,15 @@ const types = {
 
 module.exports.process = (client, message, args) => {
     const p_args = [];
+    p_args.join = args.join;
 
     args.forEach((value) => {
         const arg_obj = { };
 
         arg_obj.raw = value;
+        arg_obj.toString = function () {
+            return arg_obj.raw;
+        };
 
         if (value.match(USERS_PATTERN)) {
             arg_obj.type = types.MEMBER;
