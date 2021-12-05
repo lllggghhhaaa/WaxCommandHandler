@@ -62,7 +62,7 @@ handler.events.on("command_executed", async (command, client, message, args) => 
 
 #### Recebendo erros
 ```js
-handler.events.on("command_error", e => {
+handler.events.on("command_error", (e, command, client, message, args) => {
     console.log(e);
 }); // evento emitido quando ocorre algum erro
 

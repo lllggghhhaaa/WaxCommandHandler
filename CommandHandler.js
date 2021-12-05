@@ -136,6 +136,6 @@ module.exports.executeCommand = async (command, client, message, args) => {
     try {
         await command.execute(commandConfig.client, message, args);
     } catch (e) {
-        events.emit("command_error", e);
+        events.emit("command_error", e, command, client, message, args);
     }
 }
