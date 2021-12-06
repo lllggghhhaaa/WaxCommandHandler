@@ -14,12 +14,7 @@ module.exports.process = (client, message, args) => {
     p_args.join = args.join;
 
     args.forEach((value) => {
-        const arg_obj = { };
-
-        arg_obj.raw = value;
-        arg_obj.toString = function () {
-            return arg_obj.raw;
-        };
+        const arg_obj = new Argument(value);
 
         if (value.match(USERS_PATTERN)) {
             arg_obj.type = types.MEMBER;
@@ -42,7 +37,7 @@ module.exports.process = (client, message, args) => {
             arg_obj.value = message.guild.roles.cache.get(id);
         } else if (!isNaN(value)) {
             arg_obj.type = types.NUMBER;
-            arg_obj.value = BigInt(arg_obj.raw);
+            arg_obj.value = BigInt(value);
         } else {
             arg_obj.type = types.STRING
         }
@@ -54,3 +49,12 @@ module.exports.process = (client, message, args) => {
 };
 
 module.exports.types = types;
+
+class Argument extends String {
+    constructor(props) {
+        super(props);
+    }
+
+    type;
+    value;
+}
