@@ -53,6 +53,7 @@ module.exports.types = types;
 class Argument extends String {
     constructor(props) {
         super(props);
+        this.raw = props;
     }
 
     type;
