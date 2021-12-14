@@ -143,7 +143,8 @@ Tipos
 
 - "any" (ignora qualquer tipo, retorna string)
 - "string" (permite que nao seja nenhum dos outros abaixo, retorna string)
-- "number" (permite que seja apenas um numero, retorna BigInt)
+- "number" (permite que seja apenas um numero, retorna Number)
+- "bingint" (permite que seja apenas um numero, retorna BigInt)
 - "member" (permite que seja apenas um membro em uma mencao <@id>, retorna GuildMember)
 - "channel" (permite que seja apenas um canal em uma mencao <#id>, retorna TextChannel)
 - "role" (permite que seja apenas um cargo em uma mencao <@&id>, retorna Role)
