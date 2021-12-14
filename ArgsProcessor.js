@@ -6,6 +6,7 @@ const types = {
     CHANNEL: "channel",
     ROLE: "role",
     NUMBER: "number",
+    BITINT: "bigint",
     STRING: "string"
 }
 
@@ -36,8 +37,13 @@ module.exports.process = (client, message, args) => {
             const id = value.slice(3, -1);
             arg_obj.value = message.guild.roles.cache.get(id);
         } else if (!isNaN(value)) {
-            arg_obj.type = types.NUMBER;
-            arg_obj.value = BigInt(value);
+            if (value <= Number.MAX_SAFE_INTEGER && value >= Number.MIN_SAFE_INTEGER) {
+                arg_obj.type = types.NUMBER;
+                arg_obj.value = Number(value);
+            } else {
+                arg_obj.type = types.BITINT;
+                arg_obj.value = BigInt(value);
+            }
         } else {
             arg_obj.type = types.STRING
         }
