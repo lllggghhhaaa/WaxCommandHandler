@@ -19,7 +19,7 @@ function get_application() {
     return discord_client.api.applications(discord_client.user.id);
 }
 
-function postSlashMessage(data, message) {
+module.exports.postSlashMessage = (data, message) => {
     discord_client.api.interactions(data.id, data.token).callback.post({
         data: {
             type: 4,
@@ -41,7 +41,6 @@ function deleteCommand(id) {
 
 module.exports = {
     listSlashCommand,
-    postSlashMessage,
     deleteCommand
 }
 
